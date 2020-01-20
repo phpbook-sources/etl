@@ -1,0 +1,25 @@
+{
+    "name": "phpbook/etl",
+    "type": "library",
+    "description": "PHP ETL Library",
+    "keywords": ["php", "etl", "fast", "lightweight"],
+    "homepage": "https://github.com/phpbook-sources/etl",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PHPBook",
+            "email": "phpbook@programmer.net",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "phpbook/database": "*",
+        "phpbook/storage": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PHPBook\\ETL\\": "library/"
+        }
+    }
+}
