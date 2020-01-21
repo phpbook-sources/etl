@@ -142,6 +142,9 @@
                         "joins": [["customer.type", "typeAlias"], ["customer.address", "addressAlias"]],
                         "parameters": {"name": "string:name", "birthday": "datetime:-1 year", "cost": "float:500.50", "age": "integer:10", "active": "boolean:true"},
                         "conditions": ["customer.age >= :age", "customer.active = :active", "addressAlias.street like '%street%'"]
+                    },
+                    "operations": {
+                      "ignore": ["dispatch-delete", "dispatch-insert", "dispatch-update"]
                     }
                 },
                 "external": {

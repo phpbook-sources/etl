@@ -256,13 +256,17 @@ abstract class Mapper {
                                     and
                                     ($this->getValuesHashByLocalEntity($localEntity) != $getExternalHashValue)) {
 
-                                    $externalEntity = $this->getUpdatedExternalEntity($externalEntity, $localEntity);
+                                    if (!in_array('dispatch-update', $schema->local->operations->ignore)) {
 
-                                    $externalEntityManager->merge($externalEntity);
+                                        $externalEntity = $this->getUpdatedExternalEntity($externalEntity, $localEntity);
 
-                                    $externalEntityManager->flush();
+                                        $externalEntityManager->merge($externalEntity);
 
-                                    $externalEntityManager->clear();
+                                        $externalEntityManager->flush();
+
+                                        $externalEntityManager->clear();
+
+                                    }
 
                                 }  if (($this->getValuesHashByExternalEntity($externalEntity) != $getExternalHashValue)
                                     and
@@ -274,13 +278,17 @@ abstract class Mapper {
 
                                     if ($priority == \PHPBook\ETL\Routine::$PRIORITY_LOCAL) {
 
-                                        $externalEntity = $this->getUpdatedExternalEntity($externalEntity, $localEntity);
+                                        if (!in_array('dispatch-update', $schema->local->operations->ignore)) {
 
-                                        $externalEntityManager->merge($externalEntity);
+                                            $externalEntity = $this->getUpdatedExternalEntity($externalEntity, $localEntity);
 
-                                        $externalEntityManager->flush();
+                                            $externalEntityManager->merge($externalEntity);
 
-                                        $externalEntityManager->clear();
+                                            $externalEntityManager->flush();
+
+                                            $externalEntityManager->clear();
+
+                                        }
 
                                     } else {
 
@@ -318,29 +326,37 @@ abstract class Mapper {
 
                     } else {
 
-                        $externalEntity = $this->getNewExternalEntity($localEntity);
+                        if (!in_array('dispatch-insert', $schema->local->operations->ignore)) {
 
-                        $externalEntityManager->persist($externalEntity);
+                            $externalEntity = $this->getNewExternalEntity($localEntity);
 
-                        $externalEntityManager->flush();
+                            $externalEntityManager->persist($externalEntity);
 
-                        $externalEntityManager->clear();
+                            $externalEntityManager->flush();
 
-                        $getExternalKeyValue = $schema->external->methodKey ? $externalEntity->{$schema->external->methodKey}() : $externalEntity->{$schema->external->attributeKey};
+                            $externalEntityManager->clear();
 
-                        $localEntity = $this->getBindedLocalEntityWithExternalEntityKeyValue($localEntity, $getExternalKeyValue);
+                            $getExternalKeyValue = $schema->external->methodKey ? $externalEntity->{$schema->external->methodKey}() : $externalEntity->{$schema->external->attributeKey};
 
-                        $localEntity = $this->getBindedLocalEntityWithExternalEntityHashValue($localEntity, $this->getValuesHashByExternalEntity($externalEntity));
+                            $localEntity = $this->getBindedLocalEntityWithExternalEntityKeyValue($localEntity, $getExternalKeyValue);
 
-                        $localEntityManager->merge($localEntity);
+                            $localEntity = $this->getBindedLocalEntityWithExternalEntityHashValue($localEntity, $this->getValuesHashByExternalEntity($externalEntity));
 
-                        $localEntityManager->flush();
+                            $localEntityManager->merge($localEntity);
 
-                        $externalEntityManager->detach($externalEntity);
+                            $localEntityManager->flush();
 
-                        $localEntityManager->detach($localEntity);
+                            $externalEntityManager->detach($externalEntity);
 
-                        $externalKeysSync[$getExternalKeyValue] = true;
+                            $localEntityManager->detach($localEntity);
+
+                            $externalKeysSync[$getExternalKeyValue] = true;
+
+                        } else {
+
+                            $localEntityManager->detach($localEntity);
+
+                        }
 
                     }
 
@@ -433,7 +449,11 @@ abstract class Mapper {
 
                         if ($externalEntity) {
 
-                            $externalEntityManager->remove($externalEntity);
+                            if (!in_array('dispatch-delete', $schema->local->operations->ignore)) {
+
+                                $externalEntityManager->remove($externalEntity);
+
+                            }
 
                             $externalEntityManager->flush();
 
@@ -461,10 +481,6 @@ abstract class Mapper {
             $this->setDebug('Loading external items with bulk offset ' . $offsetExternalKey . '...');
 
             $externalEntityManager = \PHPBook\Database\EntityManager::get($this->setup->connections->external->name);
-
-            //$externalEntityManager->getConfiguration()->setSQLLogger(new \Doctrine\DBAL\Logging\EchoSQLLogger());
-
-
 
             $localEntityManager = \PHPBook\Database\EntityManager::get($this->setup->connections->local->name);
 
