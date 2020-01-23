@@ -369,7 +369,11 @@ abstract class Mapper {
 
         $this->setDebug('Deleting external rows already deleted in local database...');
 
-        $this->localChargeDeleteExternal($externalKeysSync);
+        if (!in_array('dispatch-delete', $schema->local->operations->ignore)) {
+
+            $this->localChargeDeleteExternal($externalKeysSync);
+            
+        }
 
         return $externalKeysSync;
 
