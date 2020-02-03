@@ -143,7 +143,7 @@ abstract class Mapper {
 
             };
 
-            $localEntities = $queryLocalEntities->getQuery()->getResult();
+            $localEntities = new \Doctrine\ORM\Tools\Pagination\Paginator($queryLocalEntities);
 
             if (count($localEntities) == 0) {
                 $externalStart = 0;
@@ -533,7 +533,7 @@ abstract class Mapper {
 
             };
 
-            $externalEntities = $queryExternalEntities->getQuery()->getResult();
+            $externalEntities = new \Doctrine\ORM\Tools\Pagination\Paginator($queryExternalEntities);
 
             $this->setDebug('Inserting new external items from bulk in local database...');
 
