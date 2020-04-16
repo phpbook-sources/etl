@@ -272,7 +272,7 @@ abstract class Mapper {
 
                                     }
 
-                                }  if (($this->getValuesHashByExternalEntity($externalEntity) != $getExternalHashValue)
+                                } elseif (($this->getValuesHashByExternalEntity($externalEntity) != $getExternalHashValue)
                                     and
                                     ($this->getValuesHashByLocalEntity($localEntity) == $getExternalHashValue)) {
 
