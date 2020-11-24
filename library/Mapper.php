@@ -98,9 +98,9 @@ abstract class Mapper {
             $queryLocalEntities = $localEntityManager->createQueryBuilder()
                 ->select($schema->local->table)
                 ->from($schema->local->entity, $schema->local->table)
-                ->orderBy($schema->local->table . '.' . $schema->local->attributeExternalKey, 'ASC')
-                ->addOrderBy($schema->local->table . '.' . $schema->local->attributeKey, 'ASC')
-                ->setMaxResults($schema->bulk)
+                ->orderBy('ABS(' . $schema->local->table . '.' . $schema->local->attributeExternalKey . ')', 'ASC')
+                ->addOrderBy('ABS(' . $schema->local->table . '.' . $schema->local->attributeKey . ')', 'ASC')
+                ->setMaxResults((int) $schema->bulk)
                 ->setFirstResult($offset);
 
             $offset += $schema->bulk;
@@ -153,13 +153,13 @@ abstract class Mapper {
             } else if (count($localEntities) == 1) {
                 $externalStart = $localEntities[0];
                 $externalEnd = $externalStart;
-                $externalStart = $schema->local->methodExternalKey ? $externalStart->{$schema->local->methodExternalKey}() : $externalStart->{$schema->local->attributeExternalKey};
+                $externalStart = $schema->local->methodExternalKey ? (int) $externalStart->{$schema->local->methodExternalKey}() : (int) $externalStart->{$schema->local->attributeExternalKey};
                 $externalEnd = $externalStart;
             } else {
                 $externalStart = null;
                 $externalEnd = null;
                 foreach($localEntities as $le) {
-                    $valueKey = $schema->local->methodExternalKey ? $le->{$schema->local->methodExternalKey}() : $le->{$schema->local->attributeExternalKey}; 
+                    $valueKey = $schema->local->methodExternalKey ? (int) $le->{$schema->local->methodExternalKey}() : (int) $le->{$schema->local->attributeExternalKey}; 
                     if ($valueKey) {
                         if (($valueKey < $externalStart) or ($externalStart == null)) {
                             $externalStart = $valueKey;
@@ -177,9 +177,9 @@ abstract class Mapper {
             $queryExternalEntities = $externalEntityManager->createQueryBuilder()
                 ->select($schema->external->table)
                 ->from($schema->external->entity, $schema->external->table)
-                ->where($schema->external->table . '.' . $schema->external->attributeKey . ' >= ' . $externalStart)
-                ->andWhere($schema->external->table . '.' . $schema->external->attributeKey . ' <= ' . $externalEnd)
-                ->orderBy($schema->external->table . '.' . $schema->external->attributeKey, 'ASC');
+                ->where('ABS(' . $schema->external->table . '.' . $schema->external->attributeKey . ') >= ' . $externalStart)
+                ->andWhere('ABS(' . $schema->external->table . '.' . $schema->external->attributeKey . ') <= ' . $externalEnd)
+                ->orderBy('ABS(' . $schema->external->table . '.' . $schema->external->attributeKey . ')', 'ASC');
 
             foreach($schema->external->statements->joins as $joins) {
 
@@ -495,8 +495,8 @@ abstract class Mapper {
             $queryExternalEntities = $externalEntityManager->createQueryBuilder()
                 ->select($schema->external->table)
                 ->from($schema->external->entity, $schema->external->table)
-                ->where($schema->external->table . '.' . $schema->external->attributeKey . ' > ' . $offsetExternalKey)
-                ->orderBy($schema->external->table . '.' . $schema->external->attributeKey, 'ASC')
+                ->where('ABS(' . $schema->external->table . '.' . $schema->external->attributeKey . ') > ' . $offsetExternalKey)
+                ->orderBy('ABS(' .$schema->external->table . '.' . $schema->external->attributeKey . ')', 'ASC')
                 ->setMaxResults((int) $schema->bulk);
 
             foreach($schema->external->statements->joins as $joins) {
@@ -575,7 +575,7 @@ abstract class Mapper {
 
                     if ((int) $getExternalKeyValue > (int) $offsetExternalKey) {
 
-                        $offsetExternalKey = $getExternalKeyValue;
+                        $offsetExternalKey = (int) $getExternalKeyValue;
                         
                     }
 
