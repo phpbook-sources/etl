@@ -170,6 +170,12 @@ abstract class Mapper {
                     }
                     $valueKey = null;
                 };
+                if ($externalStart == null) {
+                    $externalStart = 0;
+                };
+                if ($externalEnd == null) {
+                    $externalEnd = 0;
+                };
             };
 
             $this->setDebug('Loading external items related in local items with range keys ' . $externalStart . ' - '.$externalEnd . '...');
