@@ -393,7 +393,7 @@ abstract class Mapper {
 
         $schema = $this->getSchema();
 
-        $location = 'entities/changes/';
+        $location = ($this->setup->storage->subdirectory ? $this->setup->storage->subdirectory . '/' : '') . 'entities/changes/';
 
         $filename = $location . '/' . $schema->name . '.json';
 
@@ -618,7 +618,7 @@ abstract class Mapper {
 
         $this->setDebug('Generating keys hash files...');
 
-        $location = 'entities/changes/';
+        $location = ($this->setup->storage->subdirectory ? $this->setup->storage->subdirectory . '/' : '') . 'entities/changes/';
 
         $filename = $location . '/' . $schema->name . '.json';
 
